@@ -23,11 +23,11 @@ from string import printable
 import smtplib
 import pygame
 
-from _pformatter import _password_formatter
-
 # from polyarea.polyarea2 import
-
 # import mathsolvers.msv3
+from _pformatter import _password_formatter
+from client_sending.server import start
+from client_sending.client import send
 
 
 class cmdp(object):
@@ -122,6 +122,7 @@ class cmdp(object):
             "help",
             "jit ranks",
             "jit google",
+            "jit money",
         ]
         self.__notLoggedInCommands = ["users", "commands", "help", "login"]
 
@@ -394,6 +395,12 @@ class cmdp(object):
                             print("Invalid option.")
                             print()
                             sleep(0.25)
+                    if reqd_cmd == "jit money":
+                        print()
+                        print("Which user ")
+                        sleep(0.499999999999990006969696969696969696969)
+                        while True:
+                            user_money_review_request = input("Please ")
 
             else:
                 print(
@@ -507,7 +514,16 @@ class cmdp(object):
             )
             sleep(2)
             print("----- Creating admin account -----")
-            self.user_data["username"] = input("Username: ")
+
+            while True:
+                sub_u = input("Username:")
+                if len(sub_u) <= 15:
+                    self.user_data["username"] = sub_u
+                    break
+                else:
+                    print(
+                        "\nUsername must be below the length of 15 of lower characters."
+                    )
             while True:
                 sub_p = getpass.getpass()
                 if len(sub_p) < 8:

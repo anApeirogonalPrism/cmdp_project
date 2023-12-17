@@ -9,6 +9,15 @@ If you haven\'t already made an account, it asks you to create a new account whi
 Then you have to login to the new account.
 """
 
+# Disable
+def blockPrint():
+    sys.stdout = open(os.devnull, "w")
+
+
+# Restore
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
 from googlesearch import search
 import getpass
 import sys
@@ -30,19 +39,7 @@ os.system("cls" if os.name == "nt" else "clear")
 from _pformatter import _password_formatter
 
 
-
-# Disable
-def blockPrint():
-    sys.stdout = open(os.devnull, "w")
-
-
-# Restore
-def enablePrint():
-    sys.stdout = sys.__stdout__
-
-
 blockPrint()
-import pygame
 
 
 def readable_format(num: int | float) -> str:

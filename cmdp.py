@@ -23,11 +23,164 @@ from string import printable
 import smtplib
 import pygame
 
+os.system("cls" if os.name == "nt" else "clear")
+
 # from polyarea.polyarea2 import
 # import mathsolvers.msv3
 from _pformatter import _password_formatter
-from client_sending.server import start
-from client_sending.client import send
+
+
+
+# Disable
+def blockPrint():
+    sys.stdout = open(os.devnull, "w")
+
+
+# Restore
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
+
+blockPrint()
+import pygame
+
+
+def readable_format(num: int | float) -> str:
+    abbrs = [
+        "",
+        "K",
+        "M",
+        "B",
+        "T",
+        "Qa",
+        "Qt",
+        "Sx",
+        "Sp",
+        "Oc",
+        "No",
+        "Dc",
+        "UDc",
+        "DDc",
+        "TDc",
+        "QaDc",
+        "QiDc",
+        "SxDc",
+        "SpDc",
+        "OcDc",
+        "NmDc",
+        "Vg",
+        "UVg",
+        "DVg",
+        "TVg",
+        "QaVg",
+        "QiVg",
+        "SxVg",
+        "SpVg",
+        "OcVg",
+        "NmVg",
+        "Tg",
+        "UTg",
+        "DTg",
+        "TTg",
+        "QaTg",
+        "QiTg",
+        "SxTg",
+        "SpTg",
+        "OcTg",
+        "NmTg",
+        "Qa",
+        "UQa",
+        "DQa",
+        "TQa",
+        "QaQa",
+        "QiQa",
+        "SxQa",
+        "SpQa",
+        "OcQa",
+        "NoQa",
+        "Qi",
+        "UQi",
+        "DQi",
+        "TQi",
+        "QaQi",
+        "QiQi",
+        "SxQi",
+        "SpQi",
+        "OcQi",
+        "NoQi",
+        "Se",
+        "USe",
+        "DSe",
+        "TSe",
+        "QaSe",
+        "QiSe",
+        "SxSe",
+        "SpSe",
+        "OcSe",
+        "NoSe",
+        "St",
+        "USt",
+    ]
+    num = float("{:.3g}".format(num))
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num /= 1000.0
+    return "{} {}".format("{:f}".format(num).rstrip("0").rstrip("."), abbrs[magnitude])
+
+
+class UMM:
+    def __init__(self, money) -> None:
+        self.money = readable_format(money)
+
+    def open_window(self) -> None:
+        pygame.init()
+
+        width = 250
+        height = 100
+
+        self.screen = pygame.display.set_mode(size=(width, height))
+        pygame.display.set_caption("User Money Monitor")
+        self.text_font = pygame.font.Font(
+            "assets/Arial.ttf",
+            12,
+        )
+        self.title_font = pygame.font.Font(
+            "assets/pixely[1].ttf",
+            12,
+        )
+        title = self.title_font.render("User Money Moniter", True, "#00aa00")
+        background = pygame.image.load("assets/cookieclicker_background.jpg").convert()
+
+        clock = pygame.time.Clock()
+
+        self.screen.blit(background, (0, 0))
+        while True:
+            try:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.close_window()
+                        sleep(1)
+                        enablePrint()
+                        os.system("cls" if os.name == "nt" else "clear")
+                self.screen.blit(title, (50, 15))
+                self.render()
+                pygame.display.update()
+                clock.tick(360)
+            except Exception:
+                break
+
+    def close_window(self):
+        pygame.quit()
+
+    def blit_money(self) -> None:
+        self.display_money = self.text_font.render(
+            f"Cash: {str(self.money)}", True, "#ffffff"
+        )
+        self.screen.blit(self.display_money, (25, 50))
+
+    def render(self) -> None:
+        self.blit_money()
 
 
 class cmdp(object):
@@ -159,7 +312,7 @@ class cmdp(object):
                     print("Available commands: {}".format(self.__notLoggedInCommands))
                 if reqd_cmd == "help":
                     print(
-                        'If you want to create an account, you can enter "jit create account", or\n"jit login <username>" to login to a specific account ("<username>" is the username you want to log into).'
+                        'If you want to create an account, you can "jit create account", or\n"jit login <username>" to login to a specific account ("<username>" is the username you want to log into).'
                     )
                 if reqd_cmd == "login":
                     self.__login()
@@ -589,7 +742,7 @@ class cmdp(object):
             ]
 
             print()
-            os.system("cls")
+            os.system("cls" if os.name == "nt" else "clear")
             print("----- Login to created admin account -----")
             print("--- Log into admin user ---")
             user_u = input("Username: ")
@@ -729,33 +882,6 @@ class cmdp(object):
 
     def resetUseCount(self, /):
         self.__cmdUseCount = 0
-
-
-class user_money(cmdp):
-    def __init__(self) -> None:
-        super().__init__()
-        pygame.init()
-        self.width = 800
-        self.height = 400
-
-        screen = pygame.display.set_mode(size=(self.width, self.height))
-        pygame.display.set_caption(f"{self.user_data['username']} Money")
-        text_font = pygame.font.Font(
-            "assets/pixely[1].ttf",
-            18,
-        )
-        title = text_font.render("Cookie Clicker", True, "#00aa00")
-        background = pygame.image.load("cmdp_assets/user_pygame1.jpg").convert()
-        clock = pygame.time.Clock()
-
-        while True:
-            screen.blit(background, (0, 0))
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-            screen.blit(title, (310, 15))
-            pygame.display.update()
-            clock.tick(360)
 
 
 class resetUserSettings(cmdp):

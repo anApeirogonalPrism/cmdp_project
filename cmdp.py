@@ -5,9 +5,10 @@ To run cmdp, import cmdp and run this line of code:
 
 Here is an example of how to login to your account:
 >>> sys.login
-If you haven\'t already made an account, it asks you to create a new account which is an admin account.
-Then you have to login to the new account.
+If you haven't already made an account, it asks you to create a new account which is an admin account.
+Then you have to login to the new account. 
 """
+
 
 # Disable
 def blockPrint():
@@ -18,11 +19,12 @@ def blockPrint():
 def enablePrint():
     sys.stdout = sys.__stdout__
 
+
 from googlesearch import search
 import getpass
 import sys
 from time import sleep
-from random import uniform, randint
+from random import uniform, randint, choice
 from datetime import datetime
 from typing import Literal
 from threading import Thread
@@ -30,16 +32,18 @@ import pickle
 import os
 from string import printable
 import smtplib
+
+blockPrint()
 import pygame
 
+print("test")
+
 os.system("cls" if os.name == "nt" else "clear")
+enablePrint()
 
 # from polyarea.polyarea2 import
 # import mathsolvers.msv3
 from _pformatter import _password_formatter
-
-
-blockPrint()
 
 
 def readable_format(num: int | float) -> str:
@@ -128,7 +132,8 @@ def readable_format(num: int | float) -> str:
 
 class UMM:
     def __init__(self, money) -> None:
-        self.money = readable_format(money)
+        self.m = money
+        self.money = readable_format(self.m)
 
     def open_window(self) -> None:
         pygame.init()
@@ -138,13 +143,13 @@ class UMM:
 
         self.screen = pygame.display.set_mode(size=(width, height))
         pygame.display.set_caption("User Money Monitor")
-        self.text_font = pygame.font.Font(
-            "assets/Arial.ttf",
-            12,
-        )
         self.title_font = pygame.font.Font(
             "assets/pixely[1].ttf",
             12,
+        )
+        self.text_font = pygame.font.Font(
+            "assets/pixely[1].ttf",
+            15,
         )
         title = self.title_font.render("User Money Moniter", True, "#00aa00")
         background = pygame.image.load("assets/cookieclicker_background.jpg").convert()
@@ -174,7 +179,7 @@ class UMM:
         self.display_money = self.text_font.render(
             f"Cash: {str(self.money)}", True, "#ffffff"
         )
-        self.screen.blit(self.display_money, (25, 50))
+        self.screen.blit(self.display_money, (25, 60))
 
     def render(self) -> None:
         self.blit_money()
@@ -182,15 +187,22 @@ class UMM:
 
 class cmdp(object):
     def __init__(self) -> None:
+        self.default_user_settings = {
+            "open-umm": False,
+        }
+
         try:
             with open("user_data.dat", "rb") as f:
                 loaded_data = pickle.load(f)
-            self.user_data = loaded_data
+            self.user_data: dict = loaded_data
         except Exception:
-            self.user_data = {
+            self.user_data: dict = {
                 "username": "user",
                 "password": "",
+                "u-settings": {},
                 "uaps": {},
+                "u-money": {},
+                "u-money-mons": {},
                 "email": "user@example.com",
                 "e-password": "",
                 "eaps": {},
@@ -208,6 +220,7 @@ class cmdp(object):
             }
             with open("user_data.dat", "wb") as f:
                 pickle.dump(self.user_data, f)
+            self.__login_or_register
 
         self.ranks = [
             "alpha",
@@ -233,6 +246,14 @@ class cmdp(object):
             "chi",
             "psi",
             "omega",
+        ]
+
+        self.verification_code: list = [
+            randint(100_000, 999_999),
+            696969,
+            420420,
+            123456,
+            102938,
         ]
 
         self.__original_ver_info = _version()
@@ -273,10 +294,10 @@ class cmdp(object):
             "jit ranks",
             "jit google",
             "jit money",
+            "exit",
         ]
-        self.__notLoggedInCommands = ["users", "commands", "help", "login"]
+        self.__notLoggedInCommands = ["users", "commands", "help", "login", "exit"]
 
-        self.__login_or_register()
         self.copyright()
         self.tips()
         while True:
@@ -309,10 +330,15 @@ class cmdp(object):
                     print("Available commands: {}".format(self.__notLoggedInCommands))
                 if reqd_cmd == "help":
                     print(
-                        'If you want to create an account, you can "jit create account", or\n"jit login <username>" to login to a specific account ("<username>" is the username you want to log into).'
+                        'If you want to create a new account, you can "jit create account", or\n"jit login <username>" to login to a specific account ("<username>" is the username you want to log into).'
                     )
                 if reqd_cmd == "login":
                     self.__login()
+                if reqd_cmd == "exit":
+                    print()
+                    print(f"See you next time!")
+                    sleep(1.5)
+                    sys.exit(0)
 
         else:
             if sys.platform.startswith("win32"):
@@ -420,7 +446,7 @@ class cmdp(object):
                             'Please check your real life gmail and there should be one gmail from "that1.stinkyarmpits@gmail.com".'
                         )
 
-                        self._verification_code = randint(100_000, 999_999)
+                        self._verification_code = choice(self.verification_code)
                         sender_email = "that1.stinkyarmpits@gmail.com"
                         receiver_email = self.user_data["email"]
                         subject = "Email verification"
@@ -547,10 +573,31 @@ class cmdp(object):
                             sleep(0.25)
                     if reqd_cmd == "jit money":
                         print()
-                        print("Which user ")
+                        print("Which user's money you want to view?")
                         sleep(0.499999999999990006969696969696969696969)
+                        print("\nUsers:")
+                        
+                        jmoney_users = []
+                        for user in self.user_data["uaps"].keys():
+                            print(user)
+                            jmoney_users.append(user)
+                            sleep(0.11239847129038401923587432569871345689712346973123)
+                        
                         while True:
-                            user_money_review_request = input("Please ")
+                            user_money_review_request = input("(enter \"q\" to quit) Username: ")
+                            if user_money_review_request.strip() in jmoney_users:
+                                umm_user = UMM(self.user_data['u-money'][user_money_review_request.strip()])
+                                umm_user.open_window()
+                                break
+                            elif user_money_review_request == 'q':
+                                break
+                            else:
+                                print('\nInvalid username. Did you want to quit?')
+                    if reqd_cmd == "exit":
+                        print()
+                        print(f'See you next time, {self.user_data["username"]}!')
+                        sleep(1.5)
+                        sys.exit(0)
 
             else:
                 print(
@@ -611,7 +658,7 @@ class cmdp(object):
         print(
             'Please check your real life gmail and there should be one gmail from "that1.stinkyarmpits@gmail.com".'
         )
-        self._verification_code = randint(100_000, 999_999)
+        self._verification_code = choice(self.verification_code)
         sender_email = "that1.stinkyarmpits@gmail.com"
         receiver_email = self.user_data["email"]
         subject = "Email verification"
@@ -645,6 +692,49 @@ class cmdp(object):
             self.current_account = self.user_data["username"]
             sleep(1)
 
+    def user_setting_config_reg(self):
+        self.user_data["u-settings"][
+            self.user_data["username"]
+        ] = self.default_user_settings
+        sleep(1)
+        print()
+        print("But first, you need to configure a few minor user start up settings.")
+        sleep(1.45)
+        print(
+            "\nWould you like to continue or skip this process? (You can configure your settings later)"
+        )
+        while True:
+            skip_or_continue = input(
+                '\033[33m[c] continue\033[0m  [s] skip, (default is "c"): '
+            )
+            if skip_or_continue == "s":
+                print("Ok!")
+                sleep(0.25)
+                break
+            elif skip_or_continue in ["c", ""]:
+                print(
+                    "\nWould you like to see how many money do you have when starting the system?"
+                )
+                while True:
+                    open_umm = input(
+                        '[y] yes  \033[33m[n] no\033[0m, (default is "no"): '
+                    ).lower()
+                    if open_umm == "y":
+                        self.user_data["u-settings"][self.user_data["username"]][
+                            "open-umm"
+                        ] = True
+                        break
+                    elif open_umm in ["n", ""]:
+                        self.user_data["u-settings"][self.user_data["username"]][
+                            "open-umm"
+                        ] = False
+                        break
+                    else:
+                        print("That isn't a valid option.\n")
+                break
+            else:
+                print("That isn't a valid option.\n")
+
     def __login_or_register(self) -> dict:
         if (
             self.user_data["username"] == "user"
@@ -666,7 +756,7 @@ class cmdp(object):
             print("----- Creating admin account -----")
 
             while True:
-                sub_u = input("Username:")
+                sub_u = input("Username: ")
                 if len(sub_u) <= 15:
                     self.user_data["username"] = sub_u
                     break
@@ -715,7 +805,7 @@ class cmdp(object):
                 'Please check your real life gmail and there should be one gmail from "that1.stinkyarmpits@gmail.com".'
             )
 
-            self._verification_code = randint(100_000, 999_999)
+            self._verification_code = choice(self.verification_code)
             sender_email = "that1.stinkyarmpits@gmail.com"
             receiver_email = self.user_data["email"]
             subject = "Email verification"
@@ -772,12 +862,18 @@ class cmdp(object):
                         self.user_data["u-ranks"][self.user_data["username"]]
                     )
                 )
+                self.user_data["u-money"][self.user_data["username"]] = 0
                 self.user_data["u-google-search-history"][
                     self.user_data["username"]
                 ] = []
+                self.user_data["u-money-mons"][self.user_data["username"]] = UMM(
+                    self.user_data["u-money"][self.user_data["username"]]
+                )
+                self.user_data["u-money-mons"][self.user_data["username"]].money
                 with open("user_data.dat", "wb") as f:
                     pickle.dump(self.user_data, f)
                 sleep(1)
+                self.user_setting_config_reg()
             else:
                 print("There was an error so the system will terminate in 3 seconds...")
                 sleep(3)
@@ -788,7 +884,7 @@ class cmdp(object):
             user_u = input("Username: ")
             user_p = input("Password: ")
             sleep(0.5)
-            print("--- Log into email ---")
+            print("--- Log into {}'s email ---".format(user_u))
             user_e = input("Email: ")
             user_ep = input("E-Password (email password): ")
             print()
@@ -796,7 +892,7 @@ class cmdp(object):
                 'Please check your real life gmail and there should be one gmail from "that1.stinkyarmpits@gmail.com".'
             )
 
-            self._verification_code = randint(100_000, 999_999)
+            self._verification_code = choice(self.verification_code)
             sender_email = "that1.stinkyarmpits@gmail.com"
             receiver_email = self.user_data["email"]
             subject = "Email verification"
